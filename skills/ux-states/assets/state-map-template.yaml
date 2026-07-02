@@ -1,0 +1,61 @@
+# State map — one file per changed surface. Every state records its next_move — the user's way forward.
+# A state is a dead end if it lacks a next_move, or if its next_move has no matching transition.
+# Terminal states that exit the surface may omit transitions; mark them as exits.
+# Granularity: same user_sees ⇒ same state.
+
+form:
+  user_sees: form, call to action
+  next_move: fill the form, submit
+  transitions:
+    - trigger: submit
+      guard: form valid
+      to: loading
+    - trigger: submit
+      guard: form invalid
+      to: error-validation
+
+loading:
+  user_sees: inline loading indicator
+  next_move: wait — timeout guarantees an exit
+  transitions:
+    - trigger: api success
+      to: success
+    - trigger: api error
+      to: error-network
+    - trigger: timeout 10s
+      to: error-network
+    - trigger: session expired
+      to: error-auth
+
+error-validation:
+  user_sees: field-level message naming the fix
+  next_move: edit the flagged field, resubmit
+  transitions:
+    - trigger: resubmit
+      guard: form valid
+      to: loading
+
+error-network:
+  user_sees: actionable error
+  next_move: retry
+  transitions:
+    - trigger: retry
+      to: loading
+
+error-auth:
+  user_sees: session-expired prompt
+  next_move: re-authenticate
+  transitions:
+    - trigger: re-authenticate
+      to: authenticating
+
+authenticating:
+  user_sees: auth provider flow (leaves surface)
+  next_move: complete sign-in
+  transitions:
+    - trigger: authenticated
+      to: form
+
+success: # exit — leaves this surface
+  user_sees: confirmation
+  next_move: continue to next step
