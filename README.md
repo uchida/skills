@@ -11,19 +11,19 @@ Agent skills by Akihiro Uchida, distributed through the [open agent skills](http
 
 ## Install
 
-# Install all skills to all detected agents
+### Install all skills to all detected agents
 
 ```console
 npx skills add uchida/skills
 ```
 
-# Install a specific skill
+### Install a specific skill
 
 ```console
 npx skills add uchida/skills --skill ask-with-grounding
 ```
 
-# Install to a specific agent (e.g. opencode, claude-code, cursor)
+### Install to a specific agent (e.g. opencode, claude-code, cursor)
 
 ```console
 npx skills add uchida/skills --skill ux-states --agent opencode
